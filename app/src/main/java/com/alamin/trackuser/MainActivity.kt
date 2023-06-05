@@ -2,7 +2,9 @@ package com.alamin.trackuser
 
 import android.Manifest
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -14,16 +16,22 @@ import androidx.core.app.ActivityCompat
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var receiver: GPSLocationReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        receiver = GPSLocationReceiver()
+
+        IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).also {
+            registerReceiver(receiver,it)
+        }
 
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION),1000)
 
         val targetSdkVersion: Int = applicationContext.applicationInfo.targetSdkVersion
-
-        Toast.makeText(this, ""+targetSdkVersion, Toast.LENGTH_SHORT).show()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Log.d(TAG, "REQUESTED_NOTIFICATION")
@@ -36,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     fun endService(view: View) {
         Intent(this,LocationService::class.java).also {
             it.action = LocationService.ACTION_STOP
-            startService(it)
+            stopService(it)
         }
     }
 

@@ -43,7 +43,7 @@ class LocationService:Service() {
 
             ACTION_STOP -> end()
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
     private fun end() {
